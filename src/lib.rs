@@ -42,8 +42,8 @@ impl Th06Result {
 
     pub fn print(&self) {
         println!("東方紅魔郷.exe status: {}", self.main_executable.to_string());
-        println!("eosd.exe exists? {}",  Self::yn(self.has_eosd_exe, "rg"));
-        println!("th06e.exe exists? {}", Self::yn(self.has_th06e_exe, "rg"));
+        println!("eosd.exe exists? {}",  Self::yn(self.has_eosd_exe, "yg"));
+        println!("th06e.exe exists? {}", Self::yn(self.has_th06e_exe, "yg"));
         println!("Original dat files are present? {}", Self::yn(self.dat_jp.is_valid(), "gr"));
         println!("{}", self.dat_jp.to_string_expect_valid());
         println!("English dat files are present? {}", Self::yn(self.dat_en.is_present(), "yg"));
