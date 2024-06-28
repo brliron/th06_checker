@@ -7,6 +7,15 @@ pub struct FileError {
     pub err: io::Error,
 }
 
+impl FileError {
+    pub fn convert<T>(result: Result<T, io::Error>, filename: &'static str) -> Result<T, FileError> {
+        match result {
+            Ok(success) => Ok(success),
+            Err(e) => Err(FileError { filename: filename, err: e }),
+        }
+    }
+}
+
 pub enum FileHash {
     File {
         filename: &'static str,

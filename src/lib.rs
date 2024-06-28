@@ -2,6 +2,7 @@ pub mod file_hash;
 mod messed_encoding;
 mod version;
 mod dat_collection;
+mod vpatch;
 mod folder_writable;
 
 use std::path::Path;
@@ -10,6 +11,7 @@ use colored::*;
 use file_hash::FileError;
 use version::MainExecutableStatus;
 use dat_collection::DatCollection;
+use vpatch::Vpatch;
 
 pub struct Th06Result {
     pub main_executable: MainExecutableStatus,
@@ -17,6 +19,7 @@ pub struct Th06Result {
     pub has_th06e_exe: bool,
     pub dat_jp: DatCollection,
     pub dat_en: DatCollection,
+    pub vpatch: Vpatch,
     pub folder_writable: bool,
 }
 
@@ -39,6 +42,7 @@ impl Th06Result {
     pub fn is_ok(&self) -> bool {
         self.main_executable.is_good() &&
             self.dat_jp.is_valid() &&
+            self.vpatch.is_good() &&
             self.folder_writable
     }
 
@@ -50,6 +54,8 @@ impl Th06Result {
         println!("{}", self.dat_jp.to_string_expect_valid());
         println!("English dat files are present? {}", Self::yn(self.dat_en.is_present(), "yg"));
         println!("{}", self.dat_en.to_string_expect_missing());
+        println!("vpatch is properly installed? {}", Self::yn(self.vpatch.is_good(), "gr"));
+        println!("{}", self.vpatch.to_string());
         println!("Current folder writable? {}", Self::yn(self.folder_writable, "gr"));
     }
 
@@ -94,6 +100,7 @@ pub fn check_th06_folder() -> Result<Th06Result, FileError> {
         has_th06e_exe:   Path::new("th06e.exe").is_file(),
         dat_jp:          DatCollection::create_jp()?,
         dat_en:          DatCollection::create_en()?,
+        vpatch:          Vpatch::check()?,
         folder_writable: folder_writable::check()?,
     })
 }
