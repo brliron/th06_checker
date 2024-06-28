@@ -18,7 +18,7 @@ pub enum FileHash {
 impl FileHash {
     pub fn read(filename: &'static str)
     -> Result<Self, FileError> {
-         match fs::read(filename) {
+        match fs::read(filename) {
             Ok(file) => Ok(Self::File { filename, hash: sha256::digest(file) }),
             Err(e) => match e.kind() {
                 ErrorKind::NotFound => Ok(Self::NotFound(filename)),

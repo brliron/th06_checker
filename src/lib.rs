@@ -2,6 +2,7 @@ pub mod file_hash;
 mod messed_encoding;
 mod version;
 mod dat_collection;
+mod folder_writable;
 
 use std::path::Path;
 use colored::*;
@@ -16,6 +17,7 @@ pub struct Th06Result {
     pub has_th06e_exe: bool,
     pub dat_jp: DatCollection,
     pub dat_en: DatCollection,
+    pub folder_writable: bool,
 }
 
 impl Th06Result {
@@ -36,7 +38,8 @@ impl Th06Result {
 
     pub fn is_ok(&self) -> bool {
         self.main_executable.is_good() &&
-            self.dat_jp.is_valid()
+            self.dat_jp.is_valid() &&
+            self.folder_writable
     }
 
     pub fn print(&self) {
@@ -47,6 +50,7 @@ impl Th06Result {
         println!("{}", self.dat_jp.to_string_expect_valid());
         println!("English dat files are present? {}", Self::yn(self.dat_en.is_present(), "yg"));
         println!("{}", self.dat_en.to_string_expect_missing());
+        println!("Current folder writable? {}", Self::yn(self.folder_writable, "gr"));
     }
 
     pub fn try_to_fix(&self) {
@@ -90,5 +94,6 @@ pub fn check_th06_folder() -> Result<Th06Result, FileError> {
         has_th06e_exe:   Path::new("th06e.exe").is_file(),
         dat_jp:          DatCollection::create_jp()?,
         dat_en:          DatCollection::create_en()?,
+        folder_writable: folder_writable::check()?,
     })
 }
