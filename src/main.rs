@@ -1,4 +1,4 @@
-use th06_checker::file_hash::FileError;
+use th06_checker::file_error::FileError;
 
 #[cfg(windows)]
 fn pause() {

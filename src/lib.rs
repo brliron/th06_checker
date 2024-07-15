@@ -1,3 +1,4 @@
+pub mod file_error;
 pub mod file_hash;
 mod messed_encoding;
 mod version;
@@ -8,7 +9,7 @@ mod folder_writable;
 use std::path::Path;
 use colored::*;
 
-use file_hash::FileError;
+use file_error::FileError;
 use version::MainExecutableStatus;
 use dat_collection::DatCollection;
 use vpatch::Vpatch;
@@ -102,5 +103,6 @@ pub fn check_th06_folder() -> Result<Th06Result, FileError> {
         dat_en:          DatCollection::create_en()?,
         vpatch:          Vpatch::check()?,
         folder_writable: folder_writable::check()?,
+        // process_running: process_running::check(),
     })
 }

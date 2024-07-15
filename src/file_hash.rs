@@ -1,20 +1,8 @@
 use std::fs;
-use std::io::{self, ErrorKind};
+use std::io::ErrorKind;
 use sha256;
 
-pub struct FileError {
-    pub filename: &'static str,
-    pub err: io::Error,
-}
-
-impl FileError {
-    pub fn convert<T>(result: Result<T, io::Error>, filename: &'static str) -> Result<T, FileError> {
-        match result {
-            Ok(success) => Ok(success),
-            Err(e) => Err(FileError { filename: filename, err: e }),
-        }
-    }
-}
+use crate::file_error::FileError;
 
 pub enum FileHash {
     File {
@@ -31,7 +19,7 @@ impl FileHash {
             Ok(file) => Ok(Self::File { filename, hash: sha256::digest(file) }),
             Err(e) => match e.kind() {
                 ErrorKind::NotFound => Ok(Self::NotFound(filename)),
-                _ => Err(FileError { filename: filename, err: e }),
+                _ => Err(FileError::from_io(e, filename)),
             }
         }
     }

@@ -1,6 +1,7 @@
 use colored::*;
 
-use crate::file_hash::{FileHash, FileError};
+use crate::file_hash::FileHash;
+use crate::file_error::FileError;
 
 pub struct Dat {
     file: FileHash,
