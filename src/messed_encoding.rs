@@ -5,12 +5,8 @@ use colored::*;
 use encoding_rs::*;
 use oem_cp::code_table::DECODING_TABLE_CP_MAP;
 use codepage;
-
 #[cfg(windows)]
-extern "C" {
-    fn GetACP() -> u32;
-    fn GetOEMCP() -> u32;
-}
+use windows::Win32::Globalization::{ GetACP, GetOEMCP };
 
 // I don't think we ever had anyone on Linux with these
 // kind of errors, so we don't bother with them.

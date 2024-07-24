@@ -13,3 +13,10 @@ codepage = "0.1.1"
 oem_cp = "2.0.0"
 rust-ini = "0.21"
 sysinfo = "0.30"
+
+[target.'cfg(windows)'.dependencies.windows]
+version = "0.58"
+features = [
+	"Win32_Globalization",
+	"Win32_UI_WindowsAndMessaging",
+]

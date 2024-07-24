@@ -6,20 +6,16 @@ use std::path::PathBuf;
 use colored::*;
 use ini::Ini;
 
+#[cfg(windows)]
+use windows::Win32::UI::WindowsAndMessaging::{ GetSystemMetrics, SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN };
+
 use crate::file_hash::FileHash;
 use crate::file_error::FileError;
-
-#[cfg(windows)]
-extern "C" {
-    fn GetSystemMetrics(nIndex: i32) -> i32;
-}
 
 #[cfg(windows)]
 #[allow(non_snake_case)]
 fn get_screen_size() -> (u32, u32) {
     unsafe {
-        let SM_CXVIRTUALSCREEN: i32 = 78;
-        let SM_CYVIRTUALSCREEN: i32 = 79;
         let width  = u32::try_from(GetSystemMetrics(SM_CXVIRTUALSCREEN)).unwrap();
         let height = u32::try_from(GetSystemMetrics(SM_CYVIRTUALSCREEN)).unwrap();
         (width, height)
