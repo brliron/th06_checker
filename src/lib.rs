@@ -5,6 +5,7 @@ mod version;
 mod dat_collection;
 mod vpatch;
 mod folder_writable;
+mod process;
 
 use std::path::Path;
 use colored::*;
@@ -22,6 +23,7 @@ pub struct Th06Result {
     pub dat_en: DatCollection,
     pub vpatch: Vpatch,
     pub folder_writable: bool,
+    pub process_running: bool,
 }
 
 impl Th06Result {
@@ -44,7 +46,8 @@ impl Th06Result {
         self.main_executable.is_good() &&
             self.dat_jp.is_valid() &&
             self.vpatch.is_good() &&
-            self.folder_writable
+            self.folder_writable &&
+            !self.process_running
     }
 
     pub fn print(&self) {
@@ -58,6 +61,7 @@ impl Th06Result {
         println!("vpatch is properly installed? {}", Self::yn(self.vpatch.is_good(), "gr"));
         println!("{}", self.vpatch.to_string());
         println!("Current folder writable? {}", Self::yn(self.folder_writable, "gr"));
+        println!("東方紅魔郷.exe is already running? {}", Self::yn(self.process_running, "rg"));
     }
 
     pub fn try_to_fix(&self) {
@@ -91,6 +95,14 @@ impl Th06Result {
             }
             println!("Fix failed. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
         }
+
+        if self.process_running {
+            if process::kill() {
+                println!("Killed 東方紅魔郷.exe. Please try again.");
+            } else {
+                println!("{}", String::from("東方紅魔郷.exe found, but not killed. Please try to reboot your computer.").yellow());
+            }
+        }
     }
 }
 
@@ -103,6 +115,6 @@ pub fn check_th06_folder() -> Result<Th06Result, FileError> {
         dat_en:          DatCollection::create_en()?,
         vpatch:          Vpatch::check()?,
         folder_writable: folder_writable::check()?,
-        // process_running: process_running::check(),
+        process_running: process::is_running(),
     })
 }
