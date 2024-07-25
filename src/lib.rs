@@ -96,6 +96,15 @@ impl Th06Result {
             println!("Fix failed. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
         }
 
+        if !self.folder_writable {
+            println!("Current directory isn't writable. Trying to fix...");
+            if folder_writable::fix() {
+                println!("Game directory set to writable. Please try again.");
+            } else {
+                println!("{}", String::from("Failed to set the game folder to writable. Please open the folder properties and uncheck the 'read-only' checkbox.").red());
+            }
+        }
+
         if self.process_running {
             if process::kill() {
                 println!("Killed 東方紅魔郷.exe. Please try again.");
