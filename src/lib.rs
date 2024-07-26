@@ -81,9 +81,9 @@ impl Th06Result {
                 println!("東方紅魔郷.exe not found. Trying to fix...");
                 if messed_encoding::fix_all_filenames() {
                     println!("You can try running this tool again to see the new status after this fix.");
-                    return;
+                } else {
+                    println!("東方紅魔郷.exe not found. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
                 }
-                println!("東方紅魔郷.exe not found. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
             },
         }
 
@@ -91,9 +91,19 @@ impl Th06Result {
             println!("At lease one original dat file wasn't found. Trying to fix...");
             if messed_encoding::fix_all_filenames() {
                 println!("You can try running this tool again to see the new status after this fix.");
-                return;
+            } else {
+                println!("Fix failed. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
             }
-            println!("Fix failed. Thcrap will probably not work. Reinstall the game from the CD or download it from somewhere else.");
+        }
+
+        if self.vpatch.has_other_dlls() {
+            println!("Invalid vpatch DLLs exist. Trying to remove them...");
+            if self.vpatch.remove_other_dlls() {
+                println!("Invalid vpatch DLLs removed. Please try again.");
+            } else {
+                println!("{}", String::from("Failed to remove the invalid vpatch dlls. Please remove the following files:").red());
+                println!("{}", self.vpatch.other_dlls_to_string());
+            }
         }
 
         if !self.folder_writable {

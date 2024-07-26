@@ -176,7 +176,6 @@ impl VpatchConfig {
 pub struct Vpatch {
     main_executable: FileStatus,
     dll: FileStatus,
-    // ini: bool,
     ini: Option<VpatchConfig>,
     other_dlls: Vec<String>,
 }
@@ -213,6 +212,27 @@ impl Vpatch {
         Ok(vec)
     }
 
+    pub fn has_other_dlls(&self) -> bool {
+        self.other_dlls.len() > 0
+    }
+
+    pub fn remove_other_dlls(&self) -> bool {
+        let mut ret = true;
+
+        for dll in &self.other_dlls {
+            print!("  Trying to remove {}...", dll);
+            match std::fs::remove_file(dll) {
+                Ok(()) => println!(""),
+                Err(e) => {
+                    println!("\n{}: {}", "Error".red(), e);
+                    ret = false;
+                },
+            }
+        }
+
+        ret
+    }
+
     pub fn is_good(&self) -> bool {
         matches!(self.main_executable, FileStatus::Good) &&
         matches!(self.dll, FileStatus::Good) &&
@@ -228,7 +248,7 @@ impl Vpatch {
         }
     }
 
-    fn other_dlls_to_string(&self) -> ColoredString {
+    pub fn other_dlls_to_string(&self) -> ColoredString {
         if self.other_dlls.len() == 0 {
             "none".green()
         } else {
@@ -255,7 +275,7 @@ r"  vpatch.exe: {}
         Ok(Vpatch {
             main_executable: Self::check_file("vpatch.exe", "29a933678de5dc4bf7941ff8587e3fe2a4794f3cfdad94453200151376f6388a")?,
             dll: Self::check_file("vpatch_th06_unicode.dll", "cc2513317da9ea8c832ef6d9cd95d12ead14b991a1eaed2d4c0fc27978b74e04")?,
-            ini: VpatchConfig::parse("vpatch.ini")?, // Path::new("vpatch.ini").is_file(),
+            ini: VpatchConfig::parse("vpatch.ini")?,
             other_dlls: Self::check_other_dlls()?,
         })
     }
