@@ -1,3 +1,5 @@
+use std::fmt;
+
 use colored::*;
 
 use crate::file_hash::FileHash;
@@ -22,14 +24,16 @@ impl MainExecutableStatus {
             _ => false,
         }
     }
+}
 
-    pub fn to_string(&self) -> String {
+impl fmt::Display for MainExecutableStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            MainExecutableStatus::Version(v) => format!(
-                "{} - {}", v.name, if v.is_good { "good".green() } else { "incorrect".red() }
+            MainExecutableStatus::Version(v) => write!(
+                f, "{} - {}", v.name, if v.is_good { "good".green() } else { "incorrect".red() }
             ),
-            MainExecutableStatus::UnknownVersion(hash) => format!("unknown version ({})", hash).red().to_string(),
-            MainExecutableStatus::Missing => "not found".red().to_string(),
+            MainExecutableStatus::UnknownVersion(hash) => write!(f, "{}", format!("unknown version ({})", hash).red()),
+            MainExecutableStatus::Missing => write!(f, "{}", "not found".red()),
         }
     }
 }

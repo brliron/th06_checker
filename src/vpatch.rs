@@ -1,4 +1,5 @@
 use std::ffi::OsString;
+use std::fmt;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
@@ -32,6 +33,17 @@ enum FileStatus {
     NotFound,
     WrongHash,
 }
+
+impl fmt::Display for FileStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            FileStatus::Good => "ok".green(),
+            FileStatus::NotFound => "missing".red(),
+            FileStatus::WrongHash => "wrond hash".red(),
+        })
+    }
+}
+
 
 pub struct VpatchConfig {
     is_enabled: Option<bool>, // If present, should be 1
@@ -240,14 +252,6 @@ impl Vpatch {
         self.other_dlls.len() == 0
     }
 
-    fn status_to_string(status: &FileStatus) -> ColoredString {
-        match status {
-            FileStatus::Good => "ok".green(),
-            FileStatus::NotFound => "missing".red(),
-            FileStatus::WrongHash => "wrond hash".red(),
-        }
-    }
-
     pub fn other_dlls_to_string(&self) -> ColoredString {
         if self.other_dlls.len() == 0 {
             "none".green()
@@ -258,19 +262,6 @@ impl Vpatch {
         }
     }
 
-    pub fn to_string(&self) -> String {
-        format!(
-r"  vpatch.exe: {}
-  vpatch_th06_unicode.dll: {}
-  vpatch.ini: {}
-  Other dlls: {}",
-            Self::status_to_string(&self.main_executable),
-            Self::status_to_string(&self.dll),
-            VpatchConfig::option_to_string(&self.ini),
-            self.other_dlls_to_string(),
-        )
-    }
-
     pub fn check() -> Result<Vpatch, FileError> {
         Ok(Vpatch {
             main_executable: Self::check_file("vpatch.exe", "29a933678de5dc4bf7941ff8587e3fe2a4794f3cfdad94453200151376f6388a")?,
@@ -278,5 +269,20 @@ r"  vpatch.exe: {}
             ini: VpatchConfig::parse("vpatch.ini")?,
             other_dlls: Self::check_other_dlls()?,
         })
+    }
+}
+
+impl fmt::Display for Vpatch {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,
+r"  vpatch.exe: {}
+  vpatch_th06_unicode.dll: {}
+  vpatch.ini: {}
+  Other dlls: {}",
+            self.main_executable,
+            self.dll,
+            VpatchConfig::option_to_string(&self.ini),
+            self.other_dlls_to_string(),
+        )
     }
 }
